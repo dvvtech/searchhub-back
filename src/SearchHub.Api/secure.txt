@@ -1,9 +1,9 @@
 Нужно создать сервис по поиску страниц на сайте.
-Например у сервис при запуске и(или) при вызове эндпоинта /reindex начал сканировать все страницы заданого сайта.
-Также у сервиса был бы эндпоинт который осуществлял бы поиск по сайту.
+Например сервис при запуске и(или) при вызове эндпоинта /reindex начал сканировать все страницы заданого сайта.
+Также у сервиса был бы эндпоинт, который осуществлял бы поиск по сайту.
 Для поиска возможно использовать библиотеку Lucene.
 
-Пустой проект уже создан и в немого можно добавлять функционал.
+Пустой проект уже создан и в него можно добавлять функционал.
 
 В конфиге указаны сайты которые нужно добавить в индекс:
 Сервис скачивает эту страницу
@@ -12,3 +12,39 @@
 
 
 https://chat.deepseek.com/a/chat/s/b065099f-82be-493b-8d6e-ec3f33d87f54
+
+
+SearchHub.sln
+├── SearchHub.Core/           # Интерфейсы, модели
+│   ├── Models/
+│   │   ├── SearchDocument.cs
+│   │   ├── SiteConfiguration.cs
+│   │   └── SearchResult.cs
+│   └── Interfaces/
+│       ├── IIndexer.cs
+│       ├── ISearchService.cs
+│       └── ICrawler.cs
+│
+├── SearchHub.Infrastructure/  # Реализации
+│   ├── Indexers/
+│   │   ├── HtmlIndexer.cs
+│   │   └── PdfIndexer.cs (если нужно)
+│   ├── Crawlers/
+│   │   ├── HttpCrawler.cs
+│   │   └── SitemapParser.cs
+│   ├── Search/
+│   │   ├── LuceneSearchService.cs
+│   │   └── InMemorySearchService.cs
+│   └── Background/
+│       └── IndexingBackgroundService.cs  # Фоновая индексация
+│
+├── SearchHub.API/             # Web API
+│   ├── Controllers/
+│   │   ├── SearchController.cs
+│   │   ├── SitesController.cs (управление сайтами)
+│   │   └── IndexController.cs (ручной запуск)
+│   ├── appsettings.json
+│   └── Program.cs
+│
+└── SearchHub.Client/          # Опционально: JS-клиент
+    └── search-client.js
