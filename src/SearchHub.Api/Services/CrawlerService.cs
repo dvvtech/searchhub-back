@@ -78,7 +78,8 @@ public class CrawlerService : ICrawlerService
                         if (Uri.TryCreate(baseUri, href, out var resolvedUri)
                             && resolvedUri.Host == baseUri.Host
                             && (resolvedUri.Scheme == "http" || resolvedUri.Scheme == "https")
-                            && !visited.Contains(resolvedUri.AbsoluteUri))
+                            && !visited.Contains(resolvedUri.AbsoluteUri)
+                            && IsHtmlPath(resolvedUri.AbsolutePath))
                         {
                             queue.Enqueue(resolvedUri.AbsoluteUri);
                         }
@@ -150,5 +151,11 @@ public class CrawlerService : ICrawlerService
     {
         var decoded = System.Net.WebUtility.HtmlDecode(text);
         return string.Join(' ', decoded.Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    private static bool IsHtmlPath(string path)
+    {
+        var ext = Path.GetExtension(path.AsSpan());
+        return ext.IsEmpty || ext.Equals(".html", StringComparison.OrdinalIgnoreCase) || ext.Equals(".htm", StringComparison.OrdinalIgnoreCase);
     }
 }
