@@ -26,7 +26,7 @@ public class CrawlerServiceTests
         var client = new HttpClient(handler);
         var crawler = new CrawlerService(client);
 
-        var site = new SiteConfiguration { Id = 1, Name = "MySite", Url = "https://mysite.com/" };
+        var site = new SiteConfiguration { Id = 1, Name = "MySite", Url = "https://mysite.com/", FileName = "mysite.bin" };
         var pages = await crawler.CrawlSiteAsync(site);
 
         Assert.All(pages, p => Assert.StartsWith("https://mysite.com", p.Url));
