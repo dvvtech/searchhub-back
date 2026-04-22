@@ -51,13 +51,12 @@ public class CrawlerService : ICrawlerService
                 var doc = new HtmlDocument();
                 doc.LoadHtml(html);
 
-                var title = doc.DocumentNode.SelectSingleNode("//title")?.InnerText?.Trim() ?? url;
-                var content = ExtractText(doc);
+                var (title, content) = ExtractPageData(doc, site.Id);
 
                 pages.Add(new CrawledPage
                 {
                     Url = url,
-                    Title = System.Net.WebUtility.HtmlDecode(title),
+                    Title = title,
                     Content = content,
                     SiteId = site.Id
                 });
@@ -90,36 +89,61 @@ public class CrawlerService : ICrawlerService
         return pages;
     }
 
-    private static readonly string[] _removeTags = ["nav", "header", "footer", "aside", "noscript", "script", "style"];
+    private static readonly string[] _removeTags = ["nav", "header", "footer", "aside", "noscript", "script", "style", "a"];
     private static readonly string[] _removeIdOrClassPatterns = ["menu", "nav", "header", "footer", "sidebar", "banner", "breadcrumb"];
 
-    private static string ExtractText(HtmlDocument doc)
+    private static (string title, string content) ExtractPageData(HtmlDocument doc, int siteId)
     {
+        if (siteId == 1)
+            return ExtractFromContentDiv(doc);
+
         var body = doc.DocumentNode.SelectSingleNode("//body");
         if (body is null)
-            return string.Empty;
+            return (string.Empty, string.Empty);
 
+        var title = doc.DocumentNode.SelectSingleNode("//title")?.InnerText?.Trim() ?? string.Empty;
+        return (System.Net.WebUtility.HtmlDecode(title), ExtractText(body));
+    }
+
+    private static (string title, string content) ExtractFromContentDiv(HtmlDocument doc)
+    {
+        var contentDiv = doc.DocumentNode.SelectSingleNode("//div[@id='content']");
+        if (contentDiv is null)
+            return (string.Empty, string.Empty);
+
+        var h1 = contentDiv.SelectSingleNode(".//h1");
+        var title = h1 is not null ? CleanText(h1.InnerText) : string.Empty;
+        h1?.Remove();
+
+        return (title, ExtractText(contentDiv));
+    }
+
+    private static string ExtractText(HtmlNode root)
+    {
         var toRemove = new List<HtmlNode>();
 
         foreach (var tag in _removeTags)
         {
-            foreach (var node in body.SelectNodes($"//{tag}") ?? Enumerable.Empty<HtmlNode>())
+            foreach (var node in root.SelectNodes($".//{tag}") ?? Enumerable.Empty<HtmlNode>())
                 toRemove.Add(node);
         }
 
         foreach (var pattern in _removeIdOrClassPatterns)
         {
-            var xpath = $"//*[contains(translate(@id,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'{pattern}') or contains(translate(@class,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'{pattern}')]";
-            foreach (var node in body.SelectNodes(xpath) ?? Enumerable.Empty<HtmlNode>())
+            var xpath = $".//*[contains(translate(@id,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'{pattern}') or contains(translate(@class,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'{pattern}')]";
+            foreach (var node in root.SelectNodes(xpath) ?? Enumerable.Empty<HtmlNode>())
                 toRemove.Add(node);
         }
 
         foreach (var node in toRemove.Distinct())
             node.Remove();
 
-        var text = body.InnerText;
+        return CleanText(root.InnerText);
+    }
+
+    private static string CleanText(string text)
+    {
         var decoded = System.Net.WebUtility.HtmlDecode(text);
-        var cleaned = string.Join(' ', decoded.Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
-        return cleaned;
+        return string.Join(' ', decoded.Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries));
     }
 }
