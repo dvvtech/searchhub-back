@@ -1,4 +1,4 @@
-﻿
+
 namespace SearchHub.Api.Configuration
 {
     public class SearchHubConfiguration
@@ -15,5 +15,7 @@ namespace SearchHub.Api.Configuration
         public required string Url { get; init; }
 
         public required string FileName { get; init; }
+
+        public string[] ExcludedPaths { get; init; } = [];
     }
 }

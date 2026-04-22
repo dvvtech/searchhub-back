@@ -37,6 +37,9 @@ public class CrawlerService : ICrawlerService
             if (!visited.Add(url))
                 continue;
 
+            if (site.ExcludedPaths.Any(p => url.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
+                continue;
+
             try
             {
                 var response = await _httpClient.GetAsync(url, ct);

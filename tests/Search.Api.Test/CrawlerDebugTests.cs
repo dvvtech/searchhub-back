@@ -12,8 +12,12 @@ public class CrawlerDebugTests
         {
             Id = 1,
             Name = "Седьмой ключ",
-            Url = "https://seventhkey.ru/",
-            FileName = "seveventhkey.bin"
+            Url = "https://seventhkey.ru/news.html",
+            FileName = "seveventhkey.bin",
+            ExcludedPaths = new string[] {
+                    "https://seventhkey.ru/news",
+                    "https://seventhkey.ru/contacts.html"
+                }
         };
 
         var httpClient = new HttpClient();
