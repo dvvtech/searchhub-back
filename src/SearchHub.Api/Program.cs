@@ -1,17 +1,30 @@
+using SearchHub.Api.Configuration;
+using SearchHub.Api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.Configure<SearchHubConfiguration>(
+    builder.Configuration.GetSection("SearchHub"));
+
+builder.Services.AddSingleton<SearchHubConfiguration>(sp =>
+    sp.GetRequiredService<IConfiguration>().GetSection("SearchHub").Get<SearchHubConfiguration>()
+    ?? new SearchHubConfiguration { Sites = [] });
+
+builder.Services.AddHttpClient<ICrawlerService, CrawlerService>();
+builder.Services.AddSingleton<ILuceneIndexService, LuceneIndexService>();
+builder.Services.AddSingleton<IIndexingService, IndexingService>();
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
+var indexingService = app.Services.GetRequiredService<IIndexingService>();
+_ = Task.Run(() => indexingService.ReindexAllAsync());
+
 app.Run();
+
+public partial class Program { }
