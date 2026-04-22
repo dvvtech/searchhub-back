@@ -7,7 +7,7 @@ namespace SearchHub.Api.Controllers
     [ApiController]
     public class IndexController : ControllerBase
     {
-        // POST /api/index/run - ручной запуск фоновой индексации всех сайтов
-        // GET /api/index/status - статус текущей индексации
+        // POST index/run - ручной запуск фоновой индексации всех сайтов
+        // GET index/status - статус текущей индексации
     }
 }

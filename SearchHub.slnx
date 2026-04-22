@@ -3,4 +3,7 @@
   <Folder Name="/src/">
     <Project Path="src/SearchHub.Api/SearchHub.Api.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Search.Api.Test/Search.Api.Test.csproj" Id="64be1210-8aab-434c-8bba-bf194ab1a56c" />
+  </Folder>
 </Solution>
