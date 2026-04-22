@@ -16,14 +16,19 @@ public class IndexController : ControllerBase
         _indexingService = indexingService;
     }
 
-    [HttpPost("run")]
-    public async Task<IActionResult> Run()
+    [HttpPost("run/{id?}")]
+    public async Task<IActionResult> Run(int? id)
     {
         if (_indexingService.IsRunning)
             return Conflict(new { message = "Indexing is already in progress" });
 
-        _ = Task.Run(() => _indexingService.ReindexAllAsync());
+        if (id.HasValue)
+        {
+            _ = Task.Run(() => _indexingService.ReindexSiteAsync(id.Value));
+            return Accepted(new { message = $"Reindexing site {id.Value} started" });
+        }
 
+        _ = Task.Run(() => _indexingService.ReindexAllAsync());
         return Accepted(new { message = "Indexing started" });
     }
 

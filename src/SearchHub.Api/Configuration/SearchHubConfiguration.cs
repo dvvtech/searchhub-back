@@ -13,5 +13,7 @@ namespace SearchHub.Api.Configuration
         public required string Name { get; init; }
      
         public required string Url { get; init; }
+
+        public required string FileName { get; init; }
     }
 }

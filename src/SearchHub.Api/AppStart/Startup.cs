@@ -1,4 +1,4 @@
-﻿using SearchHub.Api.AppStart.Extensions;
+using SearchHub.Api.AppStart.Extensions;
 using SearchHub.Api.Configuration;
 using SearchHub.Api.Services;
 
@@ -39,6 +39,7 @@ namespace SearchHub.Api.AppStart
         {
             _builder.Services.AddHttpClient<ICrawlerService, CrawlerService>();
             _builder.Services.AddSingleton<ILuceneIndexService, LuceneIndexService>();
+            _builder.Services.AddSingleton<IDataSerializer, ProtobufDataSerializer>();
             _builder.Services.AddSingleton<IIndexingService, IndexingService>();
 
             _builder.Services.AddSingleton<SearchHubConfiguration>(sp =>
