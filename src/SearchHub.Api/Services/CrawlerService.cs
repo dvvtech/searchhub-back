@@ -90,11 +90,32 @@ public class CrawlerService : ICrawlerService
         return pages;
     }
 
+    private static readonly string[] _removeTags = ["nav", "header", "footer", "aside", "noscript", "script", "style"];
+    private static readonly string[] _removeIdOrClassPatterns = ["menu", "nav", "header", "footer", "sidebar", "banner", "breadcrumb"];
+
     private static string ExtractText(HtmlDocument doc)
     {
         var body = doc.DocumentNode.SelectSingleNode("//body");
         if (body is null)
             return string.Empty;
+
+        var toRemove = new List<HtmlNode>();
+
+        foreach (var tag in _removeTags)
+        {
+            foreach (var node in body.SelectNodes($"//{tag}") ?? Enumerable.Empty<HtmlNode>())
+                toRemove.Add(node);
+        }
+
+        foreach (var pattern in _removeIdOrClassPatterns)
+        {
+            var xpath = $"//*[contains(translate(@id,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'{pattern}') or contains(translate(@class,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'{pattern}')]";
+            foreach (var node in body.SelectNodes(xpath) ?? Enumerable.Empty<HtmlNode>())
+                toRemove.Add(node);
+        }
+
+        foreach (var node in toRemove.Distinct())
+            node.Remove();
 
         var text = body.InnerText;
         var decoded = System.Net.WebUtility.HtmlDecode(text);
