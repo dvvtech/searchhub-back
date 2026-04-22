@@ -37,8 +37,7 @@ public class CrawlerService : ICrawlerService
             if (!visited.Add(url))
                 continue;
 
-            if (site.ExcludedPaths.Any(p => url.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
-                continue;
+            var isExcluded = site.ExcludedPaths.Any(p => url.StartsWith(p, StringComparison.OrdinalIgnoreCase));
 
             try
             {
@@ -54,15 +53,18 @@ public class CrawlerService : ICrawlerService
                 var doc = new HtmlDocument();
                 doc.LoadHtml(html);
 
-                var (title, content) = ExtractPageData(doc, site.Id);
-
-                pages.Add(new CrawledPage
+                if (!isExcluded)
                 {
-                    Url = url,
-                    Title = title,
-                    Content = content,
-                    SiteId = site.Id
-                });
+                    var (title, content) = ExtractPageData(doc, site.Id);
+
+                    pages.Add(new CrawledPage
+                    {
+                        Url = url,
+                        Title = title,
+                        Content = content,
+                        SiteId = site.Id
+                    });
+                }
 
                 var links = doc.DocumentNode.SelectNodes("//a[@href]");
                 if (links is not null)
