@@ -153,4 +153,58 @@ public class SearchTests
 
         Assert.Equal(2, result.Total);
     }
+
+    [Fact]
+    public void Search_RussianStemming_FindsAllWordForms()
+    {
+        using var indexService = new LuceneIndexService();
+
+        var pages = new List<CrawledPage>
+        {
+            new()
+            {
+                Url = "https://example.com/page1",
+                Title = "Поиск информации",
+                Content = "Система поиска позволяет находить нужные документы",
+                SiteId = 1
+            },
+            new()
+            {
+                Url = "https://example.com/page2",
+                Title = "Документация",
+                Content = "Полная документация по продукту находится в разделе справки",
+                SiteId = 1
+            }
+        };
+
+        indexService.IndexPages(pages);
+
+        var result = indexService.Search("поиск");
+
+        Assert.Equal(1, result.Total);
+        Assert.Equal("https://example.com/page1", result.Results[0].Url);
+    }
+
+    [Fact]
+    public void Search_RussianStemming_MatchesDifferentForms()
+    {
+        using var indexService = new LuceneIndexService();
+
+        var pages = new List<CrawledPage>
+        {
+            new()
+            {
+                Url = "https://example.com/page1",
+                Title = "Программирование",
+                Content = "Программист пишет программы для программирования приложений",
+                SiteId = 1
+            }
+        };
+
+        indexService.IndexPages(pages);
+
+        var result = indexService.Search("программист");
+
+        Assert.Equal(1, result.Total);
+    }
 }

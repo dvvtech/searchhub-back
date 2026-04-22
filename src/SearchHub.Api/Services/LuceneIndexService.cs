@@ -1,3 +1,4 @@
+using Lucene.Net.Analysis.Ru;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -20,7 +21,7 @@ public interface ILuceneIndexService
 public class LuceneIndexService : ILuceneIndexService, IDisposable
 {
     private readonly RAMDirectory _directory;
-    private readonly StandardAnalyzer _analyzer;
+    private readonly RussianAnalyzer _analyzer;
     private const LuceneVersion AppVersion = LuceneVersion.LUCENE_48;
 
     private const string FieldUrl = "url";
@@ -31,7 +32,7 @@ public class LuceneIndexService : ILuceneIndexService, IDisposable
     public LuceneIndexService()
     {
         _directory = new RAMDirectory();
-        _analyzer = new StandardAnalyzer(AppVersion);
+        _analyzer = new RussianAnalyzer(AppVersion);
     }
 
     public void IndexPages(List<CrawledPage> pages)
