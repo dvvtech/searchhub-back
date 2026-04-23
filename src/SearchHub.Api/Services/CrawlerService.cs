@@ -101,7 +101,7 @@ public class CrawlerService : ICrawlerService
     private static (string title, string content) ExtractPageData(HtmlDocument doc, int siteId)
     {
         if (siteId is 1 or 2)
-            return ExtractFromContentDiv(doc);
+            return ExtractFromContentDiv(doc, siteId);
 
         var body = doc.DocumentNode.SelectSingleNode("//body");
         if (body is null)
@@ -111,15 +111,18 @@ public class CrawlerService : ICrawlerService
         return (System.Net.WebUtility.HtmlDecode(title), ExtractText(body));
     }
 
-    private static (string title, string content) ExtractFromContentDiv(HtmlDocument doc)
+    private static (string title, string content) ExtractFromContentDiv(HtmlDocument doc, int siteId)
     {
         var contentDiv = doc.DocumentNode.SelectSingleNode("//div[@id='content']");
         if (contentDiv is null)
             return (string.Empty, string.Empty);
 
-        var h1 = contentDiv.SelectSingleNode(".//h1");
-        var title = h1 is not null ? CleanText(h1.InnerText) : string.Empty;
-        h1?.Remove();
+        var headingNode = siteId == 2
+            ? contentDiv.SelectSingleNode(".//h2") ?? contentDiv.SelectSingleNode(".//h3")
+            : contentDiv.SelectSingleNode(".//h1");
+
+        var title = headingNode is not null ? CleanText(headingNode.InnerText) : string.Empty;
+        headingNode?.Remove();
 
         return (title, ExtractText(contentDiv));
     }
