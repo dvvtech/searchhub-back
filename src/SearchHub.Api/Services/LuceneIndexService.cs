@@ -134,10 +134,24 @@ public class LuceneIndexService : ILuceneIndexService, IDisposable
             return head + "...";
 
         var start = Math.Max(0, fullIdx - 75);
-        var end = Math.Min(content.Length, fullIdx + query.Length + 75);
-        var fragment = content[start..end];
+        if (start > 0)
+        {
+            var spaceIdx = content.IndexOf(' ', start);
+            if (spaceIdx >= 0 && spaceIdx < fullIdx)
+                start = spaceIdx + 1;
+            else
+                start = 0;
+        }
 
-        return head + "..." + fragment + "...";
+        var end = Math.Min(content.Length, fullIdx + query.Length + 75);
+        if (end < content.Length)
+        {
+            var spaceIdx = content.IndexOf(' ', end);
+            if (spaceIdx >= 0)
+                end = spaceIdx;
+        }
+
+        return head + "..." + content[start..end] + "...";
     }
 
     public void Dispose()
