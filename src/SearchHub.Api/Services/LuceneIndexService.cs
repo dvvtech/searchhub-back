@@ -126,7 +126,15 @@ public class LuceneIndexService : ILuceneIndexService, IDisposable
         var first300 = content[..300];
         var idx = first300.IndexOf(query, StringComparison.OrdinalIgnoreCase);
         if (idx >= 0)
+        {
+            if (content.Length > 300)
+            {
+                var spaceIdx = content.IndexOf(' ', 300);
+                if (spaceIdx >= 0)
+                    return content[..spaceIdx] + "...";
+            }
             return first300 + "...";
+        }
 
         var head = content[..150];
         var fullIdx = content.IndexOf(query, StringComparison.OrdinalIgnoreCase);
