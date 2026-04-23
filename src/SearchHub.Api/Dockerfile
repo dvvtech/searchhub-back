@@ -12,9 +12,9 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["SearchHub.Api/SearchHub.Api.csproj", "SearchHub.Api/"]
+COPY ["src/SearchHub.Api/SearchHub.Api.csproj", "SearchHub.Api/"]
 RUN dotnet restore "./SearchHub.Api/SearchHub.Api.csproj"
-COPY . .
+COPY src/ .
 WORKDIR "/src/SearchHub.Api"
 RUN dotnet build "./SearchHub.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
