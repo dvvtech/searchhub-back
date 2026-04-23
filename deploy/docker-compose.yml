@@ -1,0 +1,24 @@
+services:
+  searchhub_api:        
+    image: ghcr.io/dvvtech/searchhub-back:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Prod      
+    networks:
+      - public-network5    
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:      
+        - "traefik.enable=true"      
+        - "traefik.http.routers.searchhub-api.rule=Host(`api.cloud-platform.pro`) && PathPrefix(`/searchhub`)"
+        - "traefik.http.routers.searchhub-api.entrypoints=websecure"      
+        - "traefik.http.routers.searchhub-api.tls.certresolver=letsencrypt"     
+        - "traefik.http.services.searchhub-api.loadbalancer.server.port=8080"
+        - "traefik.http.middlewares.searchhub-stripprefix.stripprefix.prefixes=/searchhub"
+        - "traefik.http.routers.searchhub-api.middlewares=searchhub-stripprefix"
+
+networks:
+  public-network5:
+    external: true    
