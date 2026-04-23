@@ -83,7 +83,7 @@ public class LuceneIndexService : ILuceneIndexService, IDisposable
         {
             var doc = searcher.Doc(scoreDoc.Doc);
             var content = doc.Get(FieldContent) ?? string.Empty;
-            var snippet = content.Length > 300 ? content[..300] + "..." : content;
+            var snippet = BuildSnippet(content, queryText);
 
             results.Add(new SearchResult
             {
@@ -116,6 +116,28 @@ public class LuceneIndexService : ILuceneIndexService, IDisposable
     {
         using var reader = DirectoryReader.Open(_directory);
         return reader.NumDocs;
+    }
+
+    private static string BuildSnippet(string content, string query)
+    {
+        if (content.Length <= 300)
+            return content;
+
+        var first300 = content[..300];
+        var idx = first300.IndexOf(query, StringComparison.OrdinalIgnoreCase);
+        if (idx >= 0)
+            return first300 + "...";
+
+        var head = content[..150];
+        var fullIdx = content.IndexOf(query, StringComparison.OrdinalIgnoreCase);
+        if (fullIdx < 0)
+            return head + "...";
+
+        var start = Math.Max(0, fullIdx - 75);
+        var end = Math.Min(content.Length, fullIdx + query.Length + 75);
+        var fragment = content[start..end];
+
+        return head + "..." + fragment + "...";
     }
 
     public void Dispose()
