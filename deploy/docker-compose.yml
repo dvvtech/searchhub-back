@@ -1,6 +1,10 @@
 services:
   searchhub_api:        
     image: ghcr.io/dvvtech/searchhub-back:latest
+    volumes:
+      - type: bind
+        source: /home/dvvtech/data
+        target: /app/data
     environment:
       - ASPNETCORE_ENVIRONMENT=Prod      
     networks:
