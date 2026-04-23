@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SearchHub.Api.Models;
 using SearchHub.Api.Services;
