@@ -12,7 +12,7 @@
                 options.AddPolicy(AllowSpecificOriginPolicy,
                     policy =>
                     {
-                        policy.AllowAnyOrigin()//WithOrigins("https://seventhkey.ru", "https://yashel.center", "https://oxford-ap.com")
+                        policy.WithOrigins("https://seventhkey.ru", "https://yashel.center", "https://oxford-ap.com")
                                                 //.AllowCredentials() // Разрешить куки
                               .AllowAnyHeader()
                               .AllowAnyMethod();
