@@ -100,7 +100,7 @@ public class CrawlerService : ICrawlerService
 
     private static (string title, string content) ExtractPageData(HtmlDocument doc, int siteId)
     {
-        if (siteId == 1)
+        if (siteId is 1 or 2)
             return ExtractFromContentDiv(doc);
 
         var body = doc.DocumentNode.SelectSingleNode("//body");

@@ -8,11 +8,22 @@ public class CrawlerDebugTests
     [Fact]
     public async Task CrawlRealSite_DebugTitleAndContent()
     {
+        //var site = new SiteConfiguration
+        //{
+        //    Id = 1,
+        //    Name = "Седьмой ключ",
+        //    Url = "https://seventhkey.ru/news.html",
+        //    FileName = "seveventhkey.bin",
+        //    ExcludedPaths = new string[] {
+        //            "https://seventhkey.ru/news",
+        //            "https://seventhkey.ru/contacts.html"
+        //        }
+        //};
         var site = new SiteConfiguration
         {
             Id = 1,
-            Name = "Седьмой ключ",
-            Url = "https://seventhkey.ru/news.html",
+            Name = "Яшель",
+            Url = "https://yashel.center",
             FileName = "seveventhkey.bin",
             ExcludedPaths = new string[] {
                     "https://seventhkey.ru/news",
