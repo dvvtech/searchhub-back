@@ -9,10 +9,14 @@ namespace SearchHub.Api.Controllers;
 public class SearchController : ControllerBase
 {
     private readonly ILuceneIndexService _luceneIndex;
+    private readonly ILogger<SearchController> _logger;
 
-    public SearchController(ILuceneIndexService luceneIndex)
+    public SearchController(
+        ILuceneIndexService luceneIndex,
+        ILogger<SearchController> logger)
     {
         _luceneIndex = luceneIndex;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -23,6 +27,8 @@ public class SearchController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(q))
             return BadRequest(new { message = "Query parameter 'q' is required" });
+        
+        _logger.LogInformation("Received search request: q='{Query}', siteId={SiteId}, limit={Limit}", q, siteId, limit);
 
         var result = _luceneIndex.Search(q, siteId, limit);
         return Ok(result);

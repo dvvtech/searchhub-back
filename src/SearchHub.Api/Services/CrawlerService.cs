@@ -37,7 +37,7 @@ public class CrawlerService : ICrawlerService
             if (!visited.Add(url))
                 continue;
 
-            var isExcluded = site.ExcludedPaths.Any(p => url.StartsWith(p, StringComparison.OrdinalIgnoreCase));
+            var isExcluded = site.ExcludedPaths.Any(p => url.Equals(p, StringComparison.OrdinalIgnoreCase));
 
             try
             {
