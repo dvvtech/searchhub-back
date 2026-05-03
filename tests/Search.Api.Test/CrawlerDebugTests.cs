@@ -24,7 +24,7 @@ public class CrawlerDebugTests
         {
             Id = 1,
             Name = "Яшель",
-            Url = "https://yashel.center",
+            Url = "https://yashel.center/index.html",
             FileName = "yashel.bin",
             ExcludedPaths = new string[] {
                     "https://yashel.center/news.html",

@@ -26,7 +26,7 @@ public class CrawlerService : ICrawlerService
         var queue = new Queue<string>();
         var pages = new List<CrawledPage>();
 
-        queue.Enqueue(site.Url);
+        queue.Enqueue(NormalizeUrl(site.Url));
 
         while (queue.Count > 0 && pages.Count < MaxPages)
         {
@@ -66,6 +66,12 @@ public class CrawlerService : ICrawlerService
                     });
                 }
 
+                var pageUri = new Uri(url);
+                var baseHref = doc.DocumentNode.SelectSingleNode("//base[@href]")?.GetAttributeValue("href", string.Empty);
+                var linkBaseUri = !string.IsNullOrEmpty(baseHref) && Uri.TryCreate(pageUri, baseHref, out var baseTagUri)
+                    ? baseTagUri
+                    : pageUri;
+
                 var links = doc.DocumentNode.SelectNodes("//a[@href]");
                 if (links is not null)
                 {
@@ -75,21 +81,21 @@ public class CrawlerService : ICrawlerService
                         if (string.IsNullOrWhiteSpace(href))
                             continue;
 
-                        var pageUri = new Uri(url);
-                        if (Uri.TryCreate(pageUri, href, out var resolvedUri)
+                        if (Uri.TryCreate(linkBaseUri, href, out var resolvedUri)
                             && resolvedUri.Host == baseUri.Host
-                            && (resolvedUri.Scheme == "http" || resolvedUri.Scheme == "https")
-                            && !visited.Contains(resolvedUri.AbsoluteUri)
-                            && IsHtmlPath(resolvedUri.AbsolutePath))
+                            && (resolvedUri.Scheme == "http" || resolvedUri.Scheme == "https"))
                         {
-                            queue.Enqueue(resolvedUri.AbsoluteUri);
+                            var normalizedUrl = NormalizeUrl(resolvedUri.AbsoluteUri);
+                            if (!visited.Contains(normalizedUrl) && IsHtmlPath(resolvedUri.AbsolutePath))
+                            {
+                                queue.Enqueue(normalizedUrl);
+                            }
                         }
                     }
                 }
             }
             catch
             {
-                // skip unreachable pages
             }
         }
 
@@ -161,5 +167,18 @@ public class CrawlerService : ICrawlerService
     {
         var ext = Path.GetExtension(path.AsSpan());
         return ext.IsEmpty || ext.Equals(".html", StringComparison.OrdinalIgnoreCase) || ext.Equals(".htm", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeUrl(string url)
+    {
+        var uri = new Uri(url);
+        var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var normalizedPath = "/" + string.Join("/", segments);
+        var builder = new UriBuilder(uri)
+        {
+            Path = normalizedPath,
+            Fragment = string.Empty
+        };
+        return builder.Uri.AbsoluteUri;
     }
 }
