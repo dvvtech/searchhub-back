@@ -75,7 +75,8 @@ public class CrawlerService : ICrawlerService
                         if (string.IsNullOrWhiteSpace(href))
                             continue;
 
-                        if (Uri.TryCreate(baseUri, href, out var resolvedUri)
+                        var pageUri = new Uri(url);
+                        if (Uri.TryCreate(pageUri, href, out var resolvedUri)
                             && resolvedUri.Host == baseUri.Host
                             && (resolvedUri.Scheme == "http" || resolvedUri.Scheme == "https")
                             && !visited.Contains(resolvedUri.AbsoluteUri)
