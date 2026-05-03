@@ -12,7 +12,8 @@ public class CrawlerDebugTests
         //{
         //    Id = 1,
         //    Name = "Седьмой ключ",
-        //    Url = "https://seventhkey.ru/news.html",
+        //    //Url = "https://seventhkey.ru/news.html",
+        //    Url = "https://seventhkey.ru/news/worldSession2020.html",
         //    FileName = "seveventhkey.bin",
         //    ExcludedPaths = new string[] {
         //            "https://seventhkey.ru/news",
@@ -24,10 +25,13 @@ public class CrawlerDebugTests
             Id = 1,
             Name = "Яшель",
             Url = "https://yashel.center",
-            FileName = "seveventhkey.bin",
+            FileName = "yashel.bin",
             ExcludedPaths = new string[] {
-                    "https://seventhkey.ru/news",
-                    "https://seventhkey.ru/contacts.html"
+                    "https://yashel.center/news.html",
+                    "https://yashel.center/library/main.html",
+                    "https://yashel.center/articles/main.html",
+                    "https://yashel.center/products.htm",
+                    "https://yashel.center/news.html",
                 }
         };
 

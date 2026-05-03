@@ -70,3 +70,21 @@ SearchHub.sln
 │
 └── SearchHub.Client/          # Опционально: JS-клиент
     └── search-client.js
+
+
+
+
+
+
+
+MCPAgent/                      # или ToolCallingAgent
+├── src/
+│   ├── MCPAgent.Core/         # ядро агента
+│   ├── MCPAgent.Host/         # ASP.NET Core хост (если нужен API)
+│   └── MCPAgent.Console/      # консольный тестовый раннер
+├── tests/
+│   └── MCPAgent.Tests/
+├── examples/
+│   └── SimpleBot/
+├── README.md
+└── .gitignore
