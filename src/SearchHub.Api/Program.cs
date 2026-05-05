@@ -27,5 +27,3 @@ var indexingService = app.Services.GetRequiredService<IIndexingService>();
 _ = Task.Run(() => indexingService.ReindexAllAsync());
 
 app.Run();
-
-//public partial class Program { }
