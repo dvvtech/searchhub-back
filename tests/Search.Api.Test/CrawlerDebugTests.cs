@@ -6,20 +6,77 @@ namespace Search.Api.Test;
 public class CrawlerDebugTests
 {
     [Fact]
-    public async Task CrawlRealSite_DebugTitleAndContent()
+    public async Task FindSeventhkey_DebugTitleAndContent()
+    {        
+        var site = new SiteConfiguration
+        {
+            Id = 1,
+            Name = "Седьмой ключ",
+            Url = "https://seventhkey.ru/index.html",
+            FileName = "seveventhkey.bin",
+            ExcludedPaths = new string[] {
+                    "https://seventhkey.ru/news",
+                    "https://seventhkey.ru/articles/main.html",
+                    "https://seventhkey.ru/harmonizers.html",
+                    "https://seventhkey.ru/certificates.html",
+                    "https://seventhkey.ru/news.html"
+                }
+        };
+
+        var httpClient = new HttpClient();
+        var crawler = new CrawlerService(httpClient);
+
+        using var indexService = new LuceneIndexService();
+
+        var pages = await crawler.CrawlSiteAsync(site);
+
+        indexService.IndexPages(pages);
+
+        var result = indexService.Search("фазовый");
+
+        foreach (var page in pages)
+        {
+            Console.WriteLine($"URL: {page.Url}");
+            Console.WriteLine($"Title: {page.Title}");
+            Console.WriteLine($"Content (first 200): {(page.Content.Length > 200 ? page.Content[..200] : page.Content)}");
+            Console.WriteLine(new string('-', 80));
+        }
+    }
+
+    [Fact]
+    public async Task CrawlSeventhkey_DebugTitleAndContent()
     {
-        //var site = new SiteConfiguration
-        //{
-        //    Id = 1,
-        //    Name = "Седьмой ключ",
-        //    //Url = "https://seventhkey.ru/news.html",
-        //    Url = "https://seventhkey.ru/news/worldSession2020.html",
-        //    FileName = "seveventhkey.bin",
-        //    ExcludedPaths = new string[] {
-        //            "https://seventhkey.ru/news",
-        //            "https://seventhkey.ru/contacts.html"
-        //        }
-        //};
+        var site = new SiteConfiguration
+        {
+            Id = 1,
+            Name = "Седьмой ключ",            
+            Url = "https://seventhkey.ru/index.html",
+            FileName = "seveventhkey.bin",
+            ExcludedPaths = new string[] {
+                    "https://seventhkey.ru/news",
+                    "https://seventhkey.ru/articles/main.html",
+                    "https://seventhkey.ru/harmonizers.html",
+                    "https://seventhkey.ru/certificates.html",
+                    "https://seventhkey.ru/news.html"
+                }
+        };
+
+        var httpClient = new HttpClient();
+        var crawler = new CrawlerService(httpClient);
+        var pages = await crawler.CrawlSiteAsync(site);
+
+        foreach (var page in pages)
+        {
+            Console.WriteLine($"URL: {page.Url}");
+            Console.WriteLine($"Title: {page.Title}");
+            Console.WriteLine($"Content (first 200): {(page.Content.Length > 200 ? page.Content[..200] : page.Content)}");
+            Console.WriteLine(new string('-', 80));
+        }
+    }
+
+    [Fact]
+    public async Task CrawlYashel_DebugTitleAndConten2()
+    {
         var site = new SiteConfiguration
         {
             Id = 1,
