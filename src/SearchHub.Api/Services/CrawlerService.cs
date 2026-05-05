@@ -87,7 +87,7 @@ public class CrawlerService : ICrawlerService
                         {
                             var normalizedUrl = NormalizeUrl(resolvedUri.AbsoluteUri);
                             if (!visited.Contains(normalizedUrl) && IsHtmlPath(resolvedUri.AbsolutePath))
-                            {
+                            {                                
                                 queue.Enqueue(normalizedUrl);
                             }
                         }
@@ -126,7 +126,7 @@ public class CrawlerService : ICrawlerService
 
         var headingNode = siteId == 2
             ? contentDiv.SelectSingleNode(".//h2") ?? contentDiv.SelectSingleNode(".//h3")
-            : contentDiv.SelectSingleNode(".//h1");
+            : contentDiv.SelectSingleNode(".//h1") ?? contentDiv.SelectSingleNode(".//h3");
 
         var title = headingNode is not null ? CleanText(headingNode.InnerText) : string.Empty;
         headingNode?.Remove();
